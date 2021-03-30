@@ -175,40 +175,41 @@ void IonFlow::evalResidual(double* x, double* rsd, int* diag,
         return;
     }
     
-    double E_ex_field = 1000  //External electric field V/m
+    double E_ex_field = 100  //External electric field V/m
 
-    for (double multiplier = 0; multiplier <= 1; multiplier+=0.05) {
-        double E_x0_ini = E(x, 0);
-        for (size_t j = jmin; j <= jmax; j++) {
-            double dEdz_xj_ini = dEdz(x, j);
-            if (j == 0) {
-                // enforcing the flux for charged species is difficult
-                // since charged species are also affected by electric
-                // force, so Neumann boundary condition is used.
-                for (size_t k : m_kCharge) {
-                    rsd[index(c_offset_Y + k, 0)] = Y(x, k, 0) - Y(x, k, 1);
-                }
+    //for (double multiplier = 0; multiplier <= 1; multiplier+=0.05) {
+    //   double E_x0_ini = E(x, 0);
+    for (size_t j = jmin; j <= jmax; j++) {
+    //     double dEdz_xj_ini = dEdz(x, j);
+        if (j == 0) {
+            // enforcing the flux for charged species is difficult
+            // since charged species are also affected by electric
+            // force, so Neumann boundary condition is used.
+            for (size_t k : m_kCharge) {
+                rsd[index(c_offset_Y + k, 0)] = Y(x, k, 0) - Y(x, k, 1);
+            }
                  
-                rsd[index(c_offset_E, j)] = E(x, 0) - multiplier* E_ex_field;  //This is to include the effect of the external electric field 
-                diag[index(c_offset_E, j)] = 0;
-            }
-            else if (j == m_points - 1) {
-                rsd[index(c_offset_E, j)] = dEdz(x, j) - rho_e(x, j) / epsilon_0;
-                diag[index(c_offset_E, j)] = 0;
-            }
-            else {
-                //-----------------------------------------------
-                //    Electric field by Gauss's law
-                //
-                //    dE/dz = e/eps_0 * sum(q_k*n_k)
-                //
-                //    E = -dV/dz
-                //-----------------------------------------------
-                rsd[index(c_offset_E, j)] = dEdz(x, j) - rho_e(x, j) / epsilon_0;
-                diag[index(c_offset_E, j)] = 0;
-            }
+            //rsd[index(c_offset_E, j)] = E(x, 0) - multiplier* E_ex_field;  //This is to include the effect of the external electric field 
+            rsd[index(c_offset_E, j)] = E(x, 0) - E_ex_field;  //This is to include the effect of the external electric field 
+            diag[index(c_offset_E, j)] = 0;
+        }
+        else if (j == m_points - 1) {
+            rsd[index(c_offset_E, j)] = dEdz(x, j) - rho_e(x, j) / epsilon_0;
+            diag[index(c_offset_E, j)] = 0;
+        }
+        else {
+            //-----------------------------------------------
+            //    Electric field by Gauss's law
+            //
+            //    dE/dz = e/eps_0 * sum(q_k*n_k)
+            //
+            //    E = -dV/dz
+            //-----------------------------------------------
+            rsd[index(c_offset_E, j)] = dEdz(x, j) - rho_e(x, j) / epsilon_0;
+            diag[index(c_offset_E, j)] = 0;
         }
     }
+//}
 }
 
 void IonFlow::solveElectricField(size_t j)
