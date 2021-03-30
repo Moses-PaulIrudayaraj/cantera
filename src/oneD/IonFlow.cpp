@@ -175,7 +175,7 @@ void IonFlow::evalResidual(double* x, double* rsd, int* diag,
         return;
     }
     
-    double E_ex_field = 100  //External electric field V/m
+    double E_ex_field = 100;  //External electric field V/m
 
     //for (double multiplier = 0; multiplier <= 1; multiplier+=0.05) {
     //   double E_x0_ini = E(x, 0);
