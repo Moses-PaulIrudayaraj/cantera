@@ -174,8 +174,9 @@ void IonFlow::evalResidual(double* x, double* rsd, int* diag,
     if (m_stage != 2) {
         return;
     }
-    
-    double E_ex_field = 100;  //External electric field V/m
+
+    double E_ex_field = 10000;  //External electric field V/m
+    double multiplier[] = {0,0.01,0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1};
 
     //for (double multiplier = 0; multiplier <= 1; multiplier+=0.05) {
     //   double E_x0_ini = E(x, 0);
@@ -188,9 +189,9 @@ void IonFlow::evalResidual(double* x, double* rsd, int* diag,
             for (size_t k : m_kCharge) {
                 rsd[index(c_offset_Y + k, 0)] = Y(x, k, 0) - Y(x, k, 1);
             }
-                 
-            //rsd[index(c_offset_E, j)] = E(x, 0) - multiplier* E_ex_field;  //This is to include the effect of the external electric field 
-            rsd[index(c_offset_E, j)] = E(x, 0) - E_ex_field;  //This is to include the effect of the external electric field 
+
+            //rsd[index(c_offset_E, j)] = E(x, 0) - multiplier* E_ex_field;  //This is to include the effect of the external electric field
+            rsd[index(c_offset_E, j)] = E(x, 0) + multiplier[2]*E_ex_field;  //This is to include the effect of the external electric field
             diag[index(c_offset_E, j)] = 0;
         }
         else if (j == m_points - 1) {
