@@ -117,6 +117,9 @@ void IonFlow::frozenIonMethod(const double* x, size_t j0, size_t j1)
 
 void IonFlow::electricFieldMethod(const double* x, size_t j0, size_t j1)
 {
+    double E_ex_field = 10000;  //External electric field V/m
+    double multiplier[] = {0,0.01,0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1};
+
     for (size_t j = j0; j < j1; j++) {
         double wtm = m_wtm[j];
         double rho = density(j);
@@ -131,7 +134,7 @@ void IonFlow::electricFieldMethod(const double* x, size_t j0, size_t j1)
         }
 
         // ambipolar diffusion
-        double E_ambi = E(x,j);
+        double E_ambi = E(x,j)+ multiplier[2]*E_ex_field;
         for (size_t k : m_kCharge) {
             double Yav = 0.5 * (Y(x,k,j) + Y(x,k,j+1));
             double drift = rho * Yav * E_ambi
