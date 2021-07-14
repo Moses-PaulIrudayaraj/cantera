@@ -118,7 +118,7 @@ void IonFlow::frozenIonMethod(const double* x, size_t j0, size_t j1)
 void IonFlow::electricFieldMethod(const double* x, size_t j0, size_t j1)
 {
     double E_ex_field = 100000;  //External electric field V/m
-    double multiplier[] = {0.01,0.05,1,2,3,4,5};
+    double multiplier[] = {0.1,0.5,1,2,3,4,5};
 
     for (size_t j = j0; j < j1; j++) {
         double wtm = m_wtm[j];
@@ -134,7 +134,7 @@ void IonFlow::electricFieldMethod(const double* x, size_t j0, size_t j1)
         }
 
         // ambipolar diffusion
-        double E_ambi = E(x,j)+ multiplier[2]*E_ex_field;
+        double E_ambi = E(x,j) - multiplier[2]*E_ex_field;
         // double E_ambi = E(x,j);
         for (size_t k : m_kCharge) {
             double Yav = 0.5 * (Y(x,k,j) + Y(x,k,j+1));
@@ -194,7 +194,7 @@ void IonFlow::evalResidual(double* x, double* rsd, int* diag,
                 rsd[index(c_offset_Y + k, 0)] = Y(x, k, 0) - Y(x, k, 1);
             }
 
-            //rsd[index(c_offset_E, j)] = E(x, 0) - multiplier* E_ex_field;  //This is to include the effect of the external electric field
+            // rsd[index(c_offset_E, j)] = E(x, 0) - multiplier* E_ex_field;  //This is to include the effect of the external electric field
             // rsd[index(c_offset_E, j)] = E(x, 0) + multiplier[6]*E_ex_field;  //This is to include the effect of the external electric field
             rsd[index(c_offset_E, j)] = E(x, 0);  //This is to consider the effect of the internal electric field
             diag[index(c_offset_E, j)] = 0;
